@@ -58,6 +58,33 @@ menuentry "Arch Linux (NFS)" {
 ```
 # vim "$root/etc/fstab"
 /dev/nbd0  /  btrfs  rw,noatime,nodiratime,discard,compress=lzo  0 0
+tmpfs    /home/student/.cache/chromium  tmpfs noatime,nodiratime,nodev,nosuid,noexec,uid=student,gid=student,noauto,comment=systemd.automount
+tmpfs   /var/log        tmpfs     nodev,nosuid    0 0
+tmpfs   /var/spool/cups tmpfs     nodev,nosuid    0 0
+```
+- 更新後打包映像檔
+```
+#!/bin/sh
+
+arch-chroot /srv/arch mkinitcpio -p linux
+
+btrfs filesystem defragment -r -v /srv/arch
+find /srv/arch -xdev -type d -print -exec btrfs filesystem defragment '{}' \;
+sync
+
+systemctl stop nfs-server
+systemctl stop nbd-server
+systemctl stop dhcpd4
+systemctl stop tftpd
+sync
+
+umount /srv/arch
+
+cp -p /srv/arch2.img /srv/arch3.img
+sync
+
+cp /srv/arch.img /srv/arch2.img
+sync
 ```
 
 ## 參考文件
