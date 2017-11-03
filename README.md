@@ -78,17 +78,17 @@ systemctl stop dhcpd4
 systemctl stop tftpd
 sync
 
-umount /srv/arch
+umount /srv/arch    # arch.img 線上使用
 
-cp -p /srv/arch2.img /srv/arch3.img
+cp -p /srv/arch2.img /srv/arch3.img    # arch3.img 備份既有的映像檔
 sync
 
-cp /srv/arch.img /srv/arch2.img
+cp /srv/arch.img /srv/arch2.img    # arch2.img 提供給 NBD 使用
 sync
 ```
 
 ## 伺服器設定
-- 設定 DHCP
+- 設定 DHCP，自動分配 IP 位址與伺服器資訊
 ```
 # vim /etc/dhcpd.conf
 allow booting;
@@ -124,7 +124,8 @@ subnet 163.26.68.0 netmask 255.255.254.0 {
         include "/etc/pcroom.conf";
     }
 }
-
+```
+```
 # vim /etc/pcroom.conf
 host PC01 {
     hardware ethernet C0:3F:D5:B7:1C:8E;
@@ -135,6 +136,21 @@ host PC02 {
     hardware ethernet C0:3F:D5:B7:27:8A;
     fixed-address 163.26.69.2;
 }
+```
+- 設定 TFTP，派送開機程式 (grub, syslinux)、核心 (vmlinuz) 與檔案系統 (initramfs)
+```
+# pacman -S tftp-hpa
+# vim /etc/conf.d/tftpd
+TFTPD_ARGS="--secure /srv/arch/boot"    # 映像檔掛載後直接使用
+```
+- NBS 伺服器
+```
+# vim /etc/nbd-server/config
+[generic]
+    listenaddr = 0.0.0.0
+[arch]
+    exportname = /srv/arch2.img
+    copyonwrite = true
 ```
 
 ## 參考文件
