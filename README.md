@@ -158,5 +158,14 @@ TFTPD_ARGS="--secure /srv/arch/boot"    # 映像檔掛載後直接使用
 /srv/arch  *(rw,no_root_squash,no_subtree_check)
 ```
 
+## GUI 環境設定
+- LightDM 自動登入
+```
+# vim /srv/arch/etc/lightdm/lightdm.conf 
+[Seat:*]
+autologin-user=student
+```
+
+
 ## 參考文件
 - [ArchLinux - Diskless system](https://wiki.archlinux.org/index.php/Diskless_system)
