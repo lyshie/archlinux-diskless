@@ -137,13 +137,13 @@ host PC02 {
     fixed-address 163.26.69.2;
 }
 ```
-- 設定 TFTP，派送開機程式 (grub, syslinux)、核心 (vmlinuz) 與檔案系統 (initramfs)
+- 設定 TFTP 伺服器，派送開機程式 (grub, syslinux)、核心 (vmlinuz) 與檔案系統 (initramfs)
 ```
 # pacman -S tftp-hpa
 # vim /etc/conf.d/tftpd
 TFTPD_ARGS="--secure /srv/arch/boot"    # 映像檔掛載後直接使用
 ```
-- NBS 伺服器
+- 設定 NBD 伺服器，提供無硬碟系統
 ```
 # vim /etc/nbd-server/config
 [generic]
@@ -151,6 +151,11 @@ TFTPD_ARGS="--secure /srv/arch/boot"    # 映像檔掛載後直接使用
 [arch]
     exportname = /srv/arch2.img
     copyonwrite = true
+```
+- 設定 NFS 伺服器，提供與端更新作業系統
+```
+# vim /etc/exports
+/srv/arch  *(rw,no_root_squash,no_subtree_check)
 ```
 
 ## 參考文件
