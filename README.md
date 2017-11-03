@@ -63,7 +63,7 @@ tmpfs   /var/log        tmpfs     nodev,nosuid    0 0
 tmpfs   /var/spool/cups tmpfs     nodev,nosuid    0 0
 ```
 - 更新後打包映像檔
-```
+```bash
 #!/bin/sh
 
 arch-chroot /srv/arch mkinitcpio -p linux
