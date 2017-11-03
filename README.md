@@ -165,7 +165,49 @@ TFTPD_ARGS="--secure /srv/arch/boot"    # 映像檔掛載後直接使用
 [Seat:*]
 autologin-user=student
 ```
+## 進階設定 (arch.img)
+```
+# useradd student
+# mkdir /home/student
+# passwd student
 
+# vim /etc/netctl/eth0
+Description='A basic dhcp ethernet connection'
+Interface=eth0
+Connection=ethernet
+IP=dhcp
+DNS=('163.26.68.1')
+# systemctl enable netctl
+# netctl enable eth0
+
+# pacman -Sy lightdm
+# groupadd -r autologin
+# gpasswd -a student autologin
+# chown -R admin:admin /home/admin
+# chown -R student:student /home/student/
+
+# vim /home/student/.xprofile
+export VTE_BACKEND=Pango
+export OOO_FORCE_DESKTOP=gnome
+export GDK_USE_XFT=1
+export QT_XFT=true
+export MOZ_DISABLE_PANGO=1
+
+export LANG="zh_TW.UTF-8"
+export LC_CTYPE="zh_TW.UTF-8"
+export XMODIFIERS=@im=gcin
+export GTK_IM_MODULE="gcin"
+export QT_IM_MODULE="gcin"
+gcin &
+
+# pacman -Sy sudo
+# usermod -a -G wheel student
+# vim /etc/sudoers
+%wheel ALL=(ALL) ALL
+
+# vim /etc/autofs/auto.misc
+106     -fstype=cifs,username=username,password=password  ://163.26.68.2/106學生作品
+```
 
 ## 參考文件
 - [ArchLinux - Diskless system](https://wiki.archlinux.org/index.php/Diskless_system)
