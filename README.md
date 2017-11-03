@@ -87,5 +87,55 @@ cp /srv/arch.img /srv/arch2.img
 sync
 ```
 
+## 伺服器設定
+- 設定 DHCP
+```
+# vim /etc/dhcpd.conf
+allow booting;
+allow bootp;
+
+authoritative;
+
+option domain-name-servers 163.26.68.1;
+option routers 163.26.69.254;
+option subnet-mask 255.255.254.0;
+
+option architecture code 93 = unsigned integer 16;
+
+subnet 163.26.68.0 netmask 255.255.254.0 {
+    next-server 163.26.68.15;
+
+    if option architecture = 00:07 {
+        filename "/grub/x86_64-efi/core.efi";
+        #filename "/grub/i386-pc/core.0";
+    } else {
+        filename "/grub/i386-pc/core.0";
+    }
+
+    pool {
+        next-server 163.26.68.15;
+        #filename "/syslinux/pxelinux.0";
+        range 163.26.69.45 163.26.69.90;
+    }
+
+    group {
+        next-server 163.26.68.15;
+        #filename "/syslinux/pxelinux.0";
+        include "/etc/pcroom.conf";
+    }
+}
+
+# vim /etc/pcroom.conf
+host PC01 {
+    hardware ethernet C0:3F:D5:B7:1C:8E;
+    fixed-address 163.26.69.1;
+}
+
+host PC02 {
+    hardware ethernet C0:3F:D5:B7:27:8A;
+    fixed-address 163.26.69.2;
+}
+```
+
 ## 參考文件
 - [ArchLinux - Diskless system](https://wiki.archlinux.org/index.php/Diskless_system)
